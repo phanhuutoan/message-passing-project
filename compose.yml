@@ -1,0 +1,31 @@
+version: "3"
+services:
+  legacy_api:
+    build:
+      context: ./modules/api
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
+    volumes:
+      - ./modules/api:/home/app
+    environment:
+      - FLASK_ENV=test
+      - DB_USERNAME="${DB_USERNAME}"
+      - DB_PASSWORD="${DB_PASSWORD}"
+      - DB_HOST="${DB_HOST}"
+      - DB_PORT="${DB_PORT}"
+      - DB_NAME="${DB_NAME}"
+    depends_on:
+      - database
+  database:
+    image: postgres:13.4
+    restart: always
+    environment:
+      - POSTGRES_USER="${DB_USERNAME}"
+      - POSTGRES_PASSWORD="${DB_PASSWORD}"
+      - POSTGRES_DB="${DB_NAME}"
+      - PGDATA="/var/lib/postgresql/db-files"
+    volumes:
+      - ./data:/var/lib/postgresql/db-files
+    ports:
+      - 5432:5432
